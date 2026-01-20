@@ -1,0 +1,50 @@
+name: ecommerce_app
+description: "A new Flutter project."
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ^3.3.4
+
+dependencies:
+  cached_network_image:
+  carousel_slider_plus:
+  flutter:
+    sdk: flutter
+  flutter_screenutil:
+  flutter_slidable:
+  auto_size_text:
+  colornames:
+  flutter_svg:
+  flutter_native_splash:
+  readmore:
+  smooth_page_indicator:
+  dio: ^5.9.0
+  pretty_dio_logger: ^1.4.0
+  injectable: ^2.7.1+4
+  get_it: ^9.2.0
+
+dev_dependencies:
+  build_runner: ^2.4.8
+  injectable_generator: ^2.6.1
+  flutter_test:
+    sdk: flutter
+  flutter_lints:
+
+flutter:
+  generate: true
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/svg_images/
+
+
+
+  fonts:
+     - family: Poppins
+       fonts:
+         - asset: assets/fonts/Poppins-.ttf
+
+
+
