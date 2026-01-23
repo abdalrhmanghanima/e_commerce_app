@@ -1,5 +1,5 @@
-import '../../pagination_dto.dart';
-import '../../category_dto.dart';
+import '../pagination_dto.dart';
+import '../category_dto.dart';
 
 /// results : 10
 /// metadata : {"currentPage":1,"numberOfPages":1,"limit":40}

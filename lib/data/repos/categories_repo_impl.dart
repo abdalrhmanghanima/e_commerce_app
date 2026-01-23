@@ -1,4 +1,5 @@
 import 'package:ecommerce_app/data/dataSource/categories_online_data_source.dart';
+import 'package:ecommerce_app/domain/api_result.dart';
 import 'package:ecommerce_app/domain/repos/categories_repo.dart';
 import 'package:injectable/injectable.dart';
 
@@ -8,7 +9,7 @@ class CategoriesRepoImpl implements CategoriesRepo{
   CategoriesOnlineDataSource onlineDataSource;
   CategoriesRepoImpl(this.onlineDataSource);
   @override
-  Future<List<Category>> getCategories() async{
+  Future<Result<List<Category>>> getCategories() async{
     return onlineDataSource.getCategories();
 }
 }

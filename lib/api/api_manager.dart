@@ -1,7 +1,13 @@
 import 'package:dio/dio.dart';
-import 'package:ecommerce_app/api/model/response/categoriesResponse/CategoriesResponse.dart';
+import 'package:ecommerce_app/api/model/response/CategoriesResponse.dart';
+import 'package:ecommerce_app/api/model/response/login_model.dart';
+import 'package:ecommerce_app/domain/api_result.dart';
 import 'package:injectable/injectable.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+
+import '../core/app_const/app_const.dart';
+import 'model/response/Signup_model.dart';
+import 'model/response/BrandsResponse.dart';
 @singleton
 class ApiManager{
 
@@ -24,4 +30,38 @@ class ApiManager{
     var categoriesResponse=CategoriesResponse.fromJson(response.data);
     return categoriesResponse;
     }
+  Future<BrandsResponse> getBrands()async{
+    var response= await _dio.get("v1/brands");
+    var brandsResponse =BrandsResponse.fromJson(response.data);
+    return brandsResponse;
+  }
+
+  Future<LoginResponse> login(String email, String password) async{
+      final response = await _dio.post(
+        'https://ecommerce.routemisr.com/api/v1/auth/signin',
+        data: {"email": email, "password": password},
+      );
+        return LoginResponse.fromJson(response.data);
+  }
+  Future<SignupModel> signUp(
+      {required String name,
+        required String email,
+        required String password,
+        required String phone}) async {
+    final response = await _dio.post(
+      AppConst.signUpEndPoint,
+      data: {
+        "name": name,
+        "email": email,
+        "password": password,
+        "rePassword": password,
+        "phone": phone
+      },
+    );
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return SignupModel.fromJson(response.data);
+    } else {
+      throw Exception(response.data['message']);
+    }
+  }
   }
