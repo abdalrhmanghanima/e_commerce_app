@@ -26,12 +26,12 @@ class ApiManager{
     ));
   }
     Future<CategoriesResponse>getCategories()async{
-    var response= await _dio.get("v1/categories");
+    var response= await _dio.get("/api/v1/categories");
     var categoriesResponse=CategoriesResponse.fromJson(response.data);
     return categoriesResponse;
     }
   Future<BrandsResponse> getBrands()async{
-    var response= await _dio.get("v1/brands");
+    var response= await _dio.get("/api/v1/brands");
     var brandsResponse =BrandsResponse.fromJson(response.data);
     return brandsResponse;
   }

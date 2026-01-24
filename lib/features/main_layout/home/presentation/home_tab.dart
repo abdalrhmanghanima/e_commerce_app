@@ -81,12 +81,13 @@ class _HomeTabState extends State<HomeTab> {
                           return Text(state.exception.toString());
                         }
                         case SuccessState():{
+                          var category= state.data;
                           return GridView.builder(
                             scrollDirection: Axis.horizontal,
                             itemBuilder: (context, index) {
-                              return const CustomCategoryWidget();
+                              return  CustomCategoryWidget(category[index]);
                             },
-                            itemCount: 20,
+                            itemCount: category.length,
                             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
                             ),
@@ -112,12 +113,13 @@ class _HomeTabState extends State<HomeTab> {
                           return Text(state.exception.toString());
                         }
                         case SuccessState():{
+                          var brand= state.data;
                           return GridView.builder(
                           scrollDirection: Axis.horizontal,
                       itemBuilder: (context, index) {
-                      return const CustomBrandWidget();
+                      return  CustomBrandWidget(brand[index]);
                       },
-                      itemCount: 20,
+                      itemCount: brand.length,
                       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       ),
