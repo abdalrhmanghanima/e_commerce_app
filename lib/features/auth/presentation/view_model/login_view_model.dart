@@ -34,7 +34,7 @@ class LoginViewModel extends ChangeNotifier {
 
       case Success<AuthResult>():{
         _state = LoginState.success;
-        _authResult = authResult;
+        _authResult = result.data;
         notifyListeners();
       }
 

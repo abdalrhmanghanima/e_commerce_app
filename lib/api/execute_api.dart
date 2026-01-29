@@ -21,10 +21,24 @@ Future<Result<T>> executeApi<T>(Future<T> apiCall())async{
     }
         default:{
      if (e.response != null) {
-    return Failure(ServerError(message: e.response?.data['message'],statusMsg:e.response?.data['statusMsg']));
-    }
+       final data = e.response?.data;
+       String? message;
+       String? statusMsg;
+       if (data is Map) {
+         message = data['message']?.toString();
+         statusMsg = data['statusMsg']?.toString();
+       } else if (data is String) {
+         message = data;
+       } else {
+         message = e.message;
+       }
+       return Failure(ServerError(message: message, statusMsg: statusMsg));
+     }
      return Failure(Exception('Something Went Wrong'));
     }
     }
+  } catch (e) {
+    // Ensure we never throw from error parsing / mapping.
+    return Failure(Exception(e.toString()));
   }
 }

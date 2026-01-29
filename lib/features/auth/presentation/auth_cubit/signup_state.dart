@@ -6,8 +6,8 @@ class InitState extends SignUpState {}
 class LoadingState extends SignUpState {}
 
 class ErrorState extends SignUpState {
-  final String message;
-  ErrorState(this.message);
+  final Exception exception;
+  ErrorState(this.exception);
 }
 
 class SuccessState extends SignUpState {

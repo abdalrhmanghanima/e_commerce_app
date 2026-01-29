@@ -13,9 +13,8 @@ class AuthRepoImpl implements AuthRepo {
       required String email,
       required String password,
       required String phone}) async {
-      final result = await _authDataSource.signUp(
+      return _authDataSource.signUp(
           name: name, email: email, password: password, phone: phone);
-      return Success(result.toEntity());
     }
   @override
   Future<Result<AuthResult>> login(String email, String password)async {

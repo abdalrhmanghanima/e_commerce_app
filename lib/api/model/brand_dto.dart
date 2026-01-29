@@ -1,4 +1,4 @@
-import '../../../domain/model/brand.dart';
+import '../../domain/model/brand.dart';
 
 /// _id : "64089fe824b25627a25315d1"
 /// name : "Canon"

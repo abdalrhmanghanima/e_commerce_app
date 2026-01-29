@@ -30,7 +30,7 @@ class SignUpCubit extends Cubit<SignUpState> {
     if (result is Success<AuthResult>) {
       emit(SuccessState(result.data));
     } else if (result is Failure<AuthResult>) {
-      emit(ErrorState(result.exception.toString()));
+      emit(ErrorState(result.exception));
     }
 
   }

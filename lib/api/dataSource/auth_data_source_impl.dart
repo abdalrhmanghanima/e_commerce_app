@@ -1,22 +1,24 @@
 import 'package:ecommerce_app/api/api_manager.dart';
 import 'package:ecommerce_app/api/execute_api.dart';
 import 'package:ecommerce_app/data/dataSource/auth_data_source.dart';
-import 'package:ecommerce_app/api/model/response/Signup_model.dart';
 import 'package:ecommerce_app/domain/api_result.dart';
 import 'package:ecommerce_app/domain/model/auth_result.dart';
 import 'package:injectable/injectable.dart';
-import '../model/response/login_model.dart';
 @Injectable(as: AuthDataSource)
 class AuthDataSourceImpl implements AuthDataSource {
   ApiManager apiManager;
   AuthDataSourceImpl(this.apiManager);
   @override
-  Future<SignupModel> signUp(
+  Future<Result<AuthResult>> signUp(
       {required String name,
       required String email,
       required String password,
       required String phone}) async {
-    return apiManager.signUp(name: name, email: email, password: password, phone: phone);
+    return executeApi(() async {
+      final response = await apiManager.signUp(
+          name: name, email: email, password: password, phone: phone);
+      return response.toEntity();
+    });
   }
   @override
   Future<Result<AuthResult>> login(String email, String password) async {

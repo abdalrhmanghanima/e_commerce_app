@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'package:ecommerce_app/core/common/component_state.dart';
 import 'package:ecommerce_app/core/di/di.dart';
+import 'package:ecommerce_app/features/main_layout/home/presentation/home_state.dart';
 import 'package:ecommerce_app/features/main_layout/home/presentation/home_view_model.dart';
 import 'package:ecommerce_app/features/main_layout/home/presentation/widgets/custom_brand_widget.dart';
 import 'package:ecommerce_app/features/main_layout/home/presentation/widgets/custom_category_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
@@ -21,9 +23,18 @@ class HomeTab extends StatefulWidget {
 }
 
 class _HomeTabState extends State<HomeTab> {
-  HomeViewModel homeViewModel= getIt.get<HomeViewModel>();
-  int _currentIndex = 0;
-  late Timer _timer;
+  HomeViewModel homeViewModel = getIt.get<HomeViewModel>();
+
+  @override
+  void initState() {
+    super.initState();
+    homeViewModel.loadHomeScreen();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   final List<String> adsImages = [
     ImageAssets.carouselSlider1,
@@ -32,67 +43,54 @@ class _HomeTabState extends State<HomeTab> {
   ];
 
   @override
-  void initState() {
-    super.initState();
-    _startImageSwitching();
-   homeViewModel.loadHomeScreen();
-  }
-
-  void _startImageSwitching() {
-    _timer = Timer.periodic(const Duration(milliseconds: 2500), (Timer timer) {
-      setState(() {
-        _currentIndex = (_currentIndex + 1) % adsImages.length;
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         children: [
           CustomAdsWidget(
             adsImages: adsImages,
-            currentIndex: _currentIndex,
-            timer: _timer,
           ),
-          ChangeNotifierProvider.value(
+          BlocProvider.value(
             value: homeViewModel,
             child: Column(
               children: [
                 CustomSectionBar(sectionNname: 'Categories', function: () {}),
                 SizedBox(
                   height: 270.h,
-                  child: Consumer<HomeViewModel>(
-                    builder: (context, vm, child) {
-                      var state = vm.state.categoriesState;
-                      switch(state){
+                  child: BlocBuilder<HomeViewModel, HomeState>(
+                    buildWhen: (previous, current) {
+                      return previous.categoriesState != current.categoriesState
+                          ? true
+                          : false;
+                    },
+                    builder: (context, state) {
+                      var categoriesState = state.categoriesState;
+                      switch (categoriesState) {
                         case InitialState():
-                        case LoadingState():{
-                          return const Center(child: CircularProgressIndicator());
-                      }
-                        case ErrorState():{
-                          return Text(state.exception.toString());
-                        }
-                        case SuccessState():{
-                          var category= state.data;
-                          return GridView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemBuilder: (context, index) {
-                              return  CustomCategoryWidget(category[index]);
-                            },
-                            itemCount: category.length,
-                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                            ),
-                          );
-                        }
+                        case LoadingState():
+                          {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+                        case ErrorState():
+                          {
+                            return Text(categoriesState.exception.toString());
+                          }
+                        case SuccessState():
+                          {
+                            var category = categoriesState.data;
+                            return GridView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, index) {
+                                return CustomCategoryWidget(category[index]);
+                              },
+                              itemCount: category.length,
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                              ),
+                            );
+                          }
                       }
                     },
                   ),
@@ -101,30 +99,40 @@ class _HomeTabState extends State<HomeTab> {
                 CustomSectionBar(sectionNname: 'Brands', function: () {}),
                 SizedBox(
                   height: 270.h,
-                  child: Consumer<HomeViewModel>(
-                    builder: (context, value, child) {
-                      var state = value.state.brandsState;
-                      switch(state){
+                  child: BlocBuilder<HomeViewModel, HomeState>(
+                    buildWhen: (previous, current) {
+                      return previous.brandsState != current.brandsState
+                          ? true
+                          : false;
+                    },
+                    builder: (context, state) {
+                      var brandsState = state.brandsState;
+                      switch (brandsState) {
                         case InitialState():
-                        case LoadingState():{
-                          return const Center(child: CircularProgressIndicator());
-                        }
-                        case ErrorState():{
-                          return Text(state.exception.toString());
-                        }
-                        case SuccessState():{
-                          var brand= state.data;
-                          return GridView.builder(
-                          scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                      return  CustomBrandWidget(brand[index]);
-                      },
-                      itemCount: brand.length,
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      ),
-                      );
-                        }
+                        case LoadingState():
+                          {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+                        case ErrorState():
+                          {
+                            return Text(brandsState.exception.toString());
+                          }
+                        case SuccessState():
+                          {
+                            var brand = brandsState.data;
+                            return GridView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, index) {
+                                return CustomBrandWidget(brand[index]);
+                              },
+                              itemCount: brand.length,
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                              ),
+                            );
+                          }
                       }
                     },
                   ),
@@ -136,20 +144,39 @@ class _HomeTabState extends State<HomeTab> {
                 SizedBox(
                   child: SizedBox(
                     height: 360.h,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                        return const ProductCard(
-                          title: "Nike Air Jordon",
-                          description:
-                              "Nike is a multinational corporation that designs, develops, and sells athletic footwear ,apparel, and accessories",
-                          rating: 4.5,
-                          price: 1100,
-                          priceBeforeDiscound: 1500,
-                          image: ImageAssets.categoryHomeImage,
-                        );
+                    child: BlocBuilder<HomeViewModel, HomeState>(
+                      buildWhen: (previous, current) {
+                        return previous.productsState!=current.productsState;
                       },
-                      itemCount: 20,
+                      builder: (buildContext, state) {
+                        var productState = state.productsState;
+                        switch (productState) {
+                          case InitialState():
+                          case LoadingState():
+                            {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                          case ErrorState():
+                            {
+                              return Text(productState.exception.toString());
+                            }
+                          case SuccessState():
+                            {
+                              var products = productState.data;
+                              return ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (context, index) {
+                                  return  ProductCard(
+                                   product: products[index],
+                                  );
+                                },
+                                itemCount: products.length,
+                              );
+                            }
+                        }
+                      },
                     ),
                   ),
                 ),
