@@ -1,7 +1,13 @@
+import 'package:ecommerce_app/core/common/component_state.dart';
 import 'package:ecommerce_app/core/resources/color_manager.dart';
 import 'package:ecommerce_app/core/resources/values_manager.dart';
+import 'package:ecommerce_app/domain/model/category.dart';
+import 'package:ecommerce_app/features/main_layout/categories/categories_state.dart';
+import 'package:ecommerce_app/features/main_layout/categories/category_view_model.dart';
 import 'package:ecommerce_app/features/main_layout/categories/presentation/widgets/category_item.dart';
+import 'package:ecommerce_app/features/main_layout/categories/presentation/widgets/shimmer_effect_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CategoriesList extends StatefulWidget {
   const CategoriesList({super.key});
@@ -11,9 +17,6 @@ class CategoriesList extends StatefulWidget {
 }
 
 class _CategoriesListState extends State<CategoriesList> {
-  // Index of the currently selected category
-  int selectedIndex = 0;
-
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -39,24 +42,48 @@ class _CategoriesListState extends State<CategoriesList> {
 
       // the categories items list
       child: ClipRRect(
-        // clip the corners of the container that hold the list view
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(AppSize.s12),
-          bottomLeft: Radius.circular(AppSize.s12),
-        ),
-        child: ListView.builder(
-          itemCount: 20,
-          itemBuilder: (context, index) => CategoryItem(index,
-              "Laptops & Electronics", selectedIndex == index, onItemClick),
-        ),
-      ),
+          // clip the corners of the container that hold the list view
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(AppSize.s12),
+            bottomLeft: Radius.circular(AppSize.s12),
+          ),
+          child: BlocBuilder<CategoryViewModel, CategoriesState>(
+            builder: (context, state) {
+              var categoriesState = state.categoriesState;
+              switch (categoriesState) {
+                case LoadingState():
+                  return ListView.builder(
+                      itemCount: 10,
+                      itemBuilder: (context, index) => CategoryItemShimmer());
+                case ErrorState():
+                  return Center(
+                      child: Text(categoriesState.exception.toString()));
+                case SuccessState<List<Category>>():
+                  var categories = categoriesState.data;
+                  if (categories.isEmpty) {
+                    return const Center(
+                      child: Text('no categories available'),
+                    );
+                  }
+                  return ListView.builder(
+                      itemCount: categories.length,
+                      itemBuilder: (context, index) {
+                        var category = categories[index];
+                        return CategoryItem(
+                          index,
+                          category.title ?? '',
+                          state.selectedCategoryIndex == index,
+                          (selectedIndex) {
+                            context.read<CategoryViewModel>().selectedCategory(
+                                category.id ?? '', selectedIndex);
+                          },
+                        );
+                      });
+                default:
+                  return SizedBox();
+              }
+            },
+          )),
     ));
-  }
-
-  // callback function to change the selected index
-  onItemClick(int index) {
-    setState(() {
-      selectedIndex = index;
-    });
   }
 }

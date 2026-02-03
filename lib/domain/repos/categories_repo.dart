@@ -6,5 +6,5 @@ import '../model/category.dart';
 abstract class CategoriesRepo{
 
   Future<Result<List<Category>>> getCategories();
-
+  Future<Result<List<Category>>> getSubCategories(String id);
 }

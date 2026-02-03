@@ -1,52 +1,63 @@
 import 'package:ecommerce_app/domain/model/category.dart';
-
-/// _id : "6439d61c0049ad0b52b90051"
-/// name : "Music"
-/// slug : "music"
-/// image : "https://ecommerce.routemisr.com/Route-Academy-categories/1681511964020.jpeg"
-/// createdAt : "2023-04-14T22:39:24.365Z"
-/// updatedAt : "2023-04-14T22:39:24.365Z"
-
 class CategoryDto {
-  CategoryDto({
-      this.id, 
-      this.name, 
-      this.slug, 
-      this.image, 
-      this.createdAt, 
-      this.updatedAt,});
+  const CategoryDto({
+    this.id,
+    this.name,
+    this.slug,
+    this.image,
+    this.categoryId,
+    this.createdAt,
+    this.updatedAt,
+  });
 
-  CategoryDto.fromJson(dynamic json) {
-    id = json['_id'];
-    name = json['name'];
-    slug = json['slug'];
-    image = json['image'];
-    createdAt = json['createdAt'];
-    updatedAt = json['updatedAt'];
-  }
-  String? id;
-  String? name;
-  String? slug;
-  String? image;
-  String? createdAt;
-  String? updatedAt;
+  factory CategoryDto.fromJson(dynamic json) {
+    String? parsedCategoryId;
 
-  Map<String, dynamic> toJson() {
-    final map = <String, dynamic>{};
-    map['_id'] = id;
-    map['name'] = name;
-    map['slug'] = slug;
-    map['image'] = image;
-    map['createdAt'] = createdAt;
-    map['updatedAt'] = updatedAt;
-    return map;
-  }
-  Category toCategory(){
-    return Category(
-      id: id,
-      title: name,
-      image: image
+    if (json['category'] != null) {
+      final cat = json['category'];
+      if (cat is String) {
+        parsedCategoryId = cat;
+      } else if (cat is Map && cat['_id'] != null) {
+        parsedCategoryId = cat['_id'].toString();
+      }
+    }
+
+    return CategoryDto(
+      id: json['_id'],
+      name: json['name'],
+      slug: json['slug'],
+      image: json['image'],
+      categoryId: parsedCategoryId,
+      createdAt: json['createdAt'],
+      updatedAt: json['updatedAt'],
     );
   }
 
+  final String? id;
+  final String? name;
+  final String? slug;
+  final String? image;
+  final String? categoryId;
+  final String? createdAt;
+  final String? updatedAt;
+
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'name': name,
+      'slug': slug,
+      'image': image,
+      if (categoryId != null) 'category': categoryId,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
+    };
+  }
+  Category toCategory({String? parentCategoryId}) {
+    return Category(
+      id: id,
+      title: name,
+      image: image,
+      categoryId: categoryId ?? parentCategoryId,
+    );
+  }
 }

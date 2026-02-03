@@ -93,4 +93,9 @@ class ApiManager{
 
     return ProductsResponse.fromJson(response.data);
   }
+  Future<CategoriesResponse>getSubCategories(String id)async{
+    var response= await _dio.get("/api/v1/categories/$id/subcategories");
+    var categoriesResponse=CategoriesResponse.fromJson(response.data);
+    return categoriesResponse;
+  }
   }

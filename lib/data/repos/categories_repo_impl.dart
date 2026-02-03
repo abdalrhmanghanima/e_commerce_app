@@ -12,4 +12,9 @@ class CategoriesRepoImpl implements CategoriesRepo{
   Future<Result<List<Category>>> getCategories() async{
     return onlineDataSource.getCategories();
 }
+
+  @override
+  Future<Result<List<Category>>> getSubCategories(String id) {
+    return onlineDataSource.getSubCategories(id: id);
+  }
 }
